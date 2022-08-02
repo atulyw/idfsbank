@@ -73,7 +73,7 @@ pipeline {
             branch 'main'
          }             
             steps {
-                echo 'pushing artifact to s3'
+                echo 'pushing artifact to s3 prod'
             }
         }
         stage('deploy-prod') {
