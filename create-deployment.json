@@ -1,0 +1,12 @@
+{
+    "applicationName": "studentapp",
+    "deploymentGroupName": "studentappdg",
+    "revision": {
+        "revisionType": "S3",
+        "s3Location": {
+            "bucket": "iata-dev-application",
+            "key": "appspec.yaml.zip",
+            "bundleType": "zip"
+        }
+    }
+}
