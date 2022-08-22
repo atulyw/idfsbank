@@ -6,3 +6,5 @@ module "mf" {
   web_acl_id     = var.web_acl_id
   tags           = var.tags
 }
+
+#tf import -var-file=$env.tfvars "module.mf[\"$d\"].aws_s3_bucket.site" $d
