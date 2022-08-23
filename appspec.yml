@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 files:
   - source: /target/studentapp-2.2-SNAPSHOT.war
-    destination: /tmp/studentapp.war
+    destination: /tmp/
   - source: /scripts/server.xml
-    destination: /tmp/server.xml
+    destination: /tmp/
 
 hooks:
   ApplicationStop:
