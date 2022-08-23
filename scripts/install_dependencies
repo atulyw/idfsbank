@@ -85,6 +85,9 @@ then
     sudo systemctl daemon-reload
     
     echo 'Starting tomcat server....'
+    sudo systemctl stop tomcat
+    sudo cp -rv /tmp/studentapp.war /opt/tomcat/8_5/webapps/students.war
+    sudo cp -rv /tmp/server.xml /opt/tomcat/8_5/conf/server.xml
     sudo systemctl start tomcat
     exit
 else

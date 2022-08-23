@@ -1,10 +1,10 @@
 version: 0.0
 os: linux
 files:
-  - source: /target/SampleMavenTomcatApp.war
-    destination: /tmp/codedeploy-deployment-staging-area/
+  - source: /target/studentapp-2.2-SNAPSHOT.war
+    destination: /tmp/studentapp.war
   - source: /scripts/server.xml
-    destination: /tmp/codedeploy-deployment-staging-area/
+    destination: /tmp/server.xml
 
 hooks:
   ApplicationStop:
