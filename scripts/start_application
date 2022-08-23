@@ -1,4 +1,6 @@
 #!/bin/bash
 set -e
 sudo systemctl stop tomcat
+sudo cp -rv /tmp/studentapp-2.2-SNAPSHOT.war /opt/tomcat/8_5/webapps/idfs.war
+sudo cp -rv /tmp/server.xml /opt/tomcat/8_5/conf/server.xml
 sudo systemctl start tomcat
