@@ -33,17 +33,18 @@ pipeline {
                 sh '''
                 mvn clean package
                 tar -cvf $JOB_BASE_NAME-$BUILD_ID.tar **/**.war
+                zip -u latest.zip **/*.war appspec.yml ./scripts/** code-deploy.sh
                 '''    
             }
         }
 
-        stage("push-dev"){
+        stage("push-artifact"){
             when {
                 branch "develop"
             }
 
             steps {
-                echo "pushing artifact to s3"
+                sh 'aws s3 cp latest.zip s3://idfs-bank-artifacts/'
             }
         }
 
@@ -53,7 +54,15 @@ pipeline {
             }
 
             steps {
-                echo "Deploying artifact to s3"
+               sh '''
+                aws deploy create-deployment \
+                --application-name idfsbank \
+                --deployment-config-name CodeDeployDefault.AllAtOnce \
+                --deployment-group-name idfsbank-dg \
+                --s3-location bucket=idfs-bank-artifacts,bundleType=zip,key=latest.zip > out
+                DEP_ID=`cat out | grep deploymentId | awk '{print $2}' | tr -d '"'`
+                aws deploy wait deployment-successful --deployment-id $DEP_ID               
+               '''
             }
         }
 
