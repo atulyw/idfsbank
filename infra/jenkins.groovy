@@ -45,7 +45,7 @@ pipeline {
             }
 
             steps {
-                sh 'aws s3 cp latest.zip s3://idfs-bank-artifacts/'
+                sh 'aws s3 cp latest-$BUILD_ID.zip s3://idfs-bank-artifacts/'
             }
         }
 
@@ -60,7 +60,7 @@ pipeline {
                 --application-name idfsbank \
                 --deployment-config-name CodeDeployDefault.AllAtOnce \
                 --deployment-group-name idfsbank-dg \
-                --s3-location bucket=idfs-bank-artifacts,bundleType=zip,key=latest.zip > out
+                --s3-location bucket=idfs-bank-artifacts,bundleType=zip,key=latest-$BUILD_ID.zip > out
                 DEP_ID=`cat out | grep deploymentId | awk '{print $2}' | tr -d '"'`
                 aws deploy wait deployment-successful --deployment-id $DEP_ID               
                '''
