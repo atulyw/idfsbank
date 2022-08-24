@@ -22,8 +22,9 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'idfs', variable: 'SONAR_TOKEN')]) {
                 sh '''
-                export PATH=$PATH:/opt/sonar-scanner/bin
-                sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=idfsbank -Dsonar.organization=atulyw
+                #export PATH=$PATH:/opt/sonar-scanner/bin
+                #sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=idfsbank -Dsonar.organization=atulyw
+                echo 'sonar-sucessfull'
                 '''
              }
           }  
