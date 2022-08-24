@@ -112,7 +112,7 @@ pipeline {
             }
 
             steps {
-                echo "pushing artifact to s3"
+                echo 'pushing artifact to s3 prod'
             }
         }
 
