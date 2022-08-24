@@ -1,87 +1,128 @@
 pipeline {
     agent any
     stages {
-        // stage('Pull') { 
-        //     // steps {
-        //     //     git credentialsId: 'github', url: 'git@github.com:atulyw/idfsbank.git'
-        //     // }
-        // }
-        stage('QA') { 
-            steps {
-                echo "$BUILD_NUMBER Pass for QA"
+        stage("QA"){
+            parallel {
+                stage("QA-1"){
+                    agent any
+                    steps {
+                        echo "QA 1 PASSED"
+                    }
+                }
+
+                stage("QA-2"){
+                    agent any
+                    steps {
+                        echo "QA 2 PASSED"
+                    }
+                }
             }
         }
-        stage('Build') { 
+        stage("Sonar-Scan") {
+            steps {
+                withCredentials([string(credentialsId: 'idfs', variable: 'SONAR_TOKEN')]) {
+                sh '''
+                export PATH=$PATH:/opt/sonar-scanner/bin
+                sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=idfsbank -Dsonar.organization=atulyw
+                '''
+             }
+          }  
+        }  
+        stage("Build"){
+            steps {
+                sh '''
+                mvn clean package
+                tar -cvf $JOB_BASE_NAME-$BUILD_ID.tar **/**.war
+                zip -u latest.zip **/*.war appspec.yml ./scripts/** code-deploy.sh
+                '''    
+            }
+        }
+
+        stage("push-artifact"){
+            when {
+                branch "develop"
+            }
+
+            steps {
+                sh 'aws s3 cp latest.zip s3://idfs-bank-artifacts/'
+            }
+        }
+
+        stage("deploy-dev"){
+            when {
+                branch "develop"
+            }
+
             steps {
                sh '''
-               mvn clean package
-               tar -cvf $JOB_BASE_NAME-$BUILD_ID.tar **/**.war
-               ls -a
-               ''' 
+                aws deploy create-deployment \
+                --application-name idfsbank \
+                --deployment-config-name CodeDeployDefault.AllAtOnce \
+                --deployment-group-name idfsbank-dg \
+                --s3-location bucket=idfs-bank-artifacts,bundleType=zip,key=latest.zip > out
+                DEP_ID=`cat out | grep deploymentId | awk '{print $2}' | tr -d '"'`
+                aws deploy wait deployment-successful --deployment-id $DEP_ID               
+               '''
             }
         }
-        stage('push-dev') {
-         when {
-            branch 'develop'
-         }    
+
+        stage("push-test"){
+            when {
+                branch "release/*"
+            }
+
             steps {
-                echo 'pushing artifact to s3'
+                echo "pushing artifact to s3"
             }
         }
-        stage('deploy-dev') { 
-         when {
-            branch 'develop'
-         }  
+
+        stage("deploy-test"){
+            when {
+                branch "release/*"
+            }
+
             steps {
-                echo 'Deploying artifact to s3'
+                echo "Deploying artifact to s3"
             }
         }
-        stage('push-test') {
-         when {
-            branch 'release/*'
-         }   
+
+        stage("push-uat"){
+            when {
+                branch "release/*"
+            }
+
             steps {
-                echo 'pushing artifact to s3'
+                echo "pushing artifact to s3"
             }
         }
-        stage('deploy-test') {
-         when {
-            branch 'release/*'
-         }             
+
+        stage("deploy-uat"){
+            when {
+                branch "release/*"
+            }
+
             steps {
-                echo 'Deploying artifact to s3'
+                echo "Deploying artifact to s3"
             }
         }
-        stage('push-uat') { 
-         when {
-            branch 'release/*'
-         }            
-            steps {
-                echo 'pushing artifact to s3'
+
+        stage("push-prod"){
+            when {
+                branch "main"
             }
-        }
-        stage('deploy-uat') {
-         when {
-            branch 'release/*'
-         }             
-            steps {
-                echo 'Deploying artifact to s3'
-            }
-        }
-        stage('push-prod') {
-         when {
-            branch 'main'
-         }             
+
             steps {
                 echo 'pushing artifact to s3 prod'
             }
         }
-        stage('deploy-prod') {
-         when {
-            branch 'main'
-         }            
+
+        stage("deploy-prod"){
+            when {
+                branch "main"
+            }
+
             steps {
-                echo 'Deploying artifact to s3'
+                echo "Deploying artifact to s3"
             }
         }
     }

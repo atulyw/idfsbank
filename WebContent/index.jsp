@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>User Data</title>
+<title>User Data for Student</title>
 </head>
 <style>
 div.ex {
@@ -15,7 +15,7 @@ div.ex {
 }
 </style>
 <body>
-	<h1>Student Registration Form - Cloudblitz</h1>
+	<h1>Student Registration Form - Pune to Nagpur</h1>
 	<div class="ex">
 		<form action="registrationController" method="post">
 			<table style="with: 50%">
