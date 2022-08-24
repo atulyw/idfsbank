@@ -35,6 +35,7 @@ pipeline {
                 mvn clean package
                 tar -cvf $JOB_BASE_NAME-$BUILD_ID.tar **/**.war
                 zip -u latest-$BUILD_ID.zip **/*.war appspec.yml ./scripts/** code-deploy.sh
+                cat appspec.yml
                 '''    
             }
         }
@@ -130,12 +131,7 @@ pipeline {
     post {
         // Clean after build
         always {
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true,
-                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
-                               [pattern: '.propsfile', type: 'EXCLUDE']])
+            cleanWs()
         }
     }
 }
