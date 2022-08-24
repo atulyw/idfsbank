@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                 mvn clean package
                 tar -cvf $JOB_BASE_NAME-$BUILD_ID.tar **/**.war
-                zip -u latest.zip **/*.war appspec.yml ./scripts/** code-deploy.sh
+                zip -u latest-$BUILD_ID.zip **/*.war appspec.yml ./scripts/** code-deploy.sh
                 '''    
             }
         }
